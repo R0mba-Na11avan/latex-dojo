@@ -28,7 +28,7 @@ const TOPIC_ICONS: Record<string, string> = {
   Famous: 'e^{i\\pi}',
 };
 
-const icon = (topic: string) =>
+export const icon = (topic: string) =>
   `<span class="topic-icon" aria-hidden="true">${katex.renderToString(TOPIC_ICONS[topic] ?? '\\bullet', { throwOnError: false })}</span>`;
 
 export interface TopicPicker {

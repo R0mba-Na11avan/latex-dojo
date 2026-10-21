@@ -3,6 +3,7 @@ import { matches, stripThinSpacing, canonical } from '../src/match';
 import katex from 'katex';
 import problems from '../src/problems.json';
 import { cheatsheet } from '../src/cheatsheet';
+import { problems as sorted } from '../src/problems';
 
 describe('stripThinSpacing', () => {
   it('removes thin spaces but keeps row breaks', () => {
@@ -49,6 +50,19 @@ describe('cheat sheet', () => {
   const entries = cheatsheet.flatMap((s) => s.items.map((i) => [s.title, i.tex]));
   it.each(entries)('%s: %s renders', (_section, tex) => {
     expect(() => katex.renderToString(tex, { throwOnError: true })).not.toThrow();
+  });
+});
+
+describe('problem order', () => {
+  it('groups by topic, easy to hard within each, numbered 1..n', () => {
+    const rank = { easy: 0, medium: 1, hard: 2 };
+    sorted.forEach((p, i) => {
+      expect(p.number).toBe(i + 1);
+      const prev = sorted[i - 1];
+      if (prev && prev.topic === p.topic) expect(rank[p.difficulty]).toBeGreaterThanOrEqual(rank[prev.difficulty]);
+      if (prev && prev.topic !== p.topic) expect(sorted.slice(i).some((q) => q.topic === prev.topic)).toBe(false);
+    });
+    expect(sorted.length).toBe(problems.length);
   });
 });
 

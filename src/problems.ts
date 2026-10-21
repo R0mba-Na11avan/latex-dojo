@@ -12,12 +12,25 @@ export interface Problem {
   number: number;
 }
 
-export const problems: Problem[] = (bank as Omit<Problem, 'number'>[]).map((p, i) => ({
-  ...p,
-  number: i + 1,
-}));
+const raw = bank as Omit<Problem, 'number'>[];
+const DIFFICULTY_RANK: Record<Difficulty, number> = { easy: 0, medium: 1, hard: 2 };
 
-export const topics: string[] = [...new Set(problems.map((p) => p.topic))];
+/** Topics in the order they first appear in problems.json. */
+export const topics: string[] = [...new Set(raw.map((p) => p.topic))];
+
+/**
+ * Bank order: by topic, then easy to hard, then file order.
+ * Exercise numbers follow this order; progress is keyed by `id`, so renumbering is harmless.
+ */
+export const problems: Problem[] = raw
+  .map((p, i) => ({ p, i }))
+  .sort(
+    (a, b) =>
+      topics.indexOf(a.p.topic) - topics.indexOf(b.p.topic) ||
+      DIFFICULTY_RANK[a.p.difficulty] - DIFFICULTY_RANK[b.p.difficulty] ||
+      a.i - b.i,
+  )
+  .map(({ p }, i) => ({ ...p, number: i + 1 }));
 
 export interface Filter {
   difficulty: Difficulty | 'all';

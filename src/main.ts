@@ -15,7 +15,7 @@ import { matches } from './match';
 import { visualMatches } from './visualMatch';
 import { Progress } from './progress';
 import { barcode } from './barcode';
-import { createTopicPicker } from './topicPicker';
+import { createTopicPicker, icon as topicIcon } from './topicPicker';
 import { applyFilter, pad, problems, topics, type Difficulty, type Filter, type Problem } from './problems';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -163,35 +163,50 @@ function refilter(): void {
 // ---- index drawer ------------------------------------------------------
 
 function openIndex(): void {
-  const tiles = $('tiles');
-  tiles.replaceChildren(
-    ...problems.map((p) => {
-      const tile = document.createElement('button');
-      tile.className = 'tile';
-      if (!list.includes(p)) tile.classList.add('filtered');
-      if (p === current) tile.classList.add('current');
-      const solved = progress.isSolved(p.id);
-      tile.innerHTML = `
-        <span class="tile-num">${pad(p.number)}</span>
-        <span class="tile-title"></span>
-        <span class="tile-meta">${DIFF_LABEL[p.difficulty]} · ${p.topic}</span>
-        ${solved ? '<span class="hanko" lang="ja">済</span>' : ''}`;
-      tile.querySelector('.tile-title')!.textContent = p.title;
-      tile.setAttribute('aria-label', `Exercise ${p.number}: ${p.title}${solved ? ', solved' : ''}`);
-      tile.addEventListener('click', () => {
-        if (!list.includes(p)) {
-          filter.difficulty = 'all';
-          filter.topic = 'all';
-          topicPicker.setValue('all');
-          refilter();
-        }
-        $<HTMLDialogElement>('index').close();
-        load(p);
-      });
-      return tile;
-    }),
-  );
+  const sections = topics.map((topic) => {
+    const items = problems.filter((p) => p.topic === topic);
+    const solved = items.filter((p) => progress.isSolved(p.id)).length;
+    const section = document.createElement('section');
+    section.className = 'index-section';
+    section.innerHTML = `
+      <h3 class="index-topic">
+        ${topicIcon(topic)}<span class="index-topic-name"></span>
+        <span class="index-topic-count">${pad(solved).slice(1)}/${pad(items.length).slice(1)}</span>
+      </h3>
+      <div class="tile-grid"></div>`;
+    section.querySelector('.index-topic-name')!.textContent = topic;
+    section.querySelector('.tile-grid')!.append(...items.map(indexTile));
+    return section;
+  });
+  $('tiles').replaceChildren(...sections);
   $<HTMLDialogElement>('index').showModal();
+  $('tiles').querySelector('.tile.current')?.scrollIntoView({ block: 'center' });
+}
+
+function indexTile(p: Problem): HTMLButtonElement {
+  const tile = document.createElement('button');
+  tile.className = 'tile';
+  if (!list.includes(p)) tile.classList.add('filtered');
+  if (p === current) tile.classList.add('current');
+  const solved = progress.isSolved(p.id);
+  tile.innerHTML = `
+    <span class="tile-num">${pad(p.number)}</span>
+    <span class="tile-title"></span>
+    <span class="tile-meta" data-difficulty="${p.difficulty}">${DIFF_LABEL[p.difficulty]}</span>
+    ${solved ? '<span class="hanko" lang="ja">済</span>' : ''}`;
+  tile.querySelector('.tile-title')!.textContent = p.title;
+  tile.setAttribute('aria-label', `Exercise ${p.number}: ${p.title}, ${p.difficulty}${solved ? ', solved' : ''}`);
+  tile.addEventListener('click', () => {
+    if (!list.includes(p)) {
+      filter.difficulty = 'all';
+      filter.topic = 'all';
+      topicPicker.setValue('all');
+      refilter();
+    }
+    $<HTMLDialogElement>('index').close();
+    load(p);
+  });
+  return tile;
 }
 
 // ---- wiring ------------------------------------------------------------
