@@ -242,20 +242,150 @@ select:focus-visible {
   align-items: center;
   gap: 8px;
 }
-.topic select {
-  appearance: none;
+/* topic picker: custom listbox (native select lists can't be themed) */
+.picker {
+  position: relative;
+}
+
+.topic-icon {
+  flex: none;
+  width: 36px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid currentColor;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  overflow: hidden;
+}
+.topic-icon .katex {
+  font-size: 1.05em;
+}
+
+.topic-name {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.picker-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 230px;
   border: var(--rule);
-  border-radius: 0;
-  background: transparent
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%231E1B18'/%3E%3C/svg%3E")
-    no-repeat right 10px center;
-  padding: 7px 30px 7px 10px;
+  background: transparent;
+  padding: 4px 10px 4px 5px;
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
-  color: var(--ink);
-  text-transform: uppercase;
   letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.picker-btn:hover,
+.picker-btn[aria-expanded='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.picker-btn .topic-icon {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.picker-btn:hover .topic-icon,
+.picker-btn[aria-expanded='true'] .topic-icon {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+.caret {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+  transition: transform 0.15s;
+}
+.picker-btn[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
+
+.picker-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  min-width: 100%;
+  max-height: min(360px, 60vh);
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 6px 6px 0 rgba(30, 27, 24, 0.28);
+}
+.picker-list:focus {
+  outline: none;
+}
+/* Chromium/Safari: bare bar, no arrow buttons. Setting scrollbar-color would override these there. */
+.picker-list::-webkit-scrollbar {
+  width: 6px;
+}
+.picker-list::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 6px 0;
+}
+.picker-list::-webkit-scrollbar-thumb {
+  background: var(--accent);
+}
+.picker-list::-webkit-scrollbar-button {
+  display: none;
+}
+@supports not selector(::-webkit-scrollbar) {
+  .picker-list {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+  }
+}
+.picker-list [role='option'] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px 5px 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.picker-list [role='option'] .topic-icon {
+  border-color: rgba(239, 220, 194, 0.45);
+}
+.picker-list [role='option'].active {
+  background: var(--accent);
+  color: var(--ink);
+}
+.picker-list [role='option'].active .topic-icon {
+  border-color: var(--ink);
+}
+.picker-list [role='option'][aria-selected='true'] .topic-name::after {
+  content: ' ●';
+  color: var(--accent);
+}
+.picker-list [role='option'].active[aria-selected='true'] .topic-name::after {
+  color: var(--ink);
+}
+.picker-list [role='option'].empty {
+  opacity: 0.4;
+}
+.topic-count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+  padding-left: 16px;
 }
 
 .pager {

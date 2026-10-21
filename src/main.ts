@@ -13,6 +13,7 @@ import { Preview } from './preview';
 import { matches } from './match';
 import { Progress } from './progress';
 import { barcode } from './barcode';
+import { createTopicPicker } from './topicPicker';
 import { applyFilter, pad, problems, topics, type Difficulty, type Filter, type Problem } from './problems';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -148,6 +149,7 @@ function refilter(): void {
     return;
   }
   list = next;
+  updateTopicCounts();
   document.querySelectorAll<HTMLButtonElement>('.chip').forEach((chip) => {
     chip.setAttribute('aria-pressed', String(chip.dataset.difficulty === filter.difficulty));
   });
@@ -177,7 +179,7 @@ function openIndex(): void {
         if (!list.includes(p)) {
           filter.difficulty = 'all';
           filter.topic = 'all';
-          $<HTMLSelectElement>('topic').value = 'all';
+          topicPicker.setValue('all');
           refilter();
         }
         $<HTMLDialogElement>('index').close();
@@ -191,12 +193,22 @@ function openIndex(): void {
 
 // ---- wiring ------------------------------------------------------------
 
-const topicSelect = $<HTMLSelectElement>('topic');
-for (const topic of topics) topicSelect.add(new Option(topic, topic));
-topicSelect.addEventListener('change', () => {
-  filter.topic = topicSelect.value;
-  refilter();
+const topicPicker = createTopicPicker({
+  root: $('topic'),
+  topics,
+  onChange: (topic) => {
+    filter.topic = topic;
+    refilter();
+  },
 });
+
+function updateTopicCounts(): void {
+  const pool = applyFilter({ difficulty: filter.difficulty, topic: 'all' });
+  const counts = new Map<string, number>();
+  for (const p of pool) counts.set(p.topic, (counts.get(p.topic) ?? 0) + 1);
+  topicPicker.setCounts(counts, pool.length);
+}
+updateTopicCounts();
 
 document.querySelectorAll<HTMLButtonElement>('.chip').forEach((chip) =>
   chip.addEventListener('click', () => {
