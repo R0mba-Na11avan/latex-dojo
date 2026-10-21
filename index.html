@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#EFDCC2" />
+    <title>LaTeX Practice</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231E1B18'/%3E%3Ctext x='16' y='23' font-family='serif' font-style='italic' font-size='20' fill='%23E8532B' text-anchor='middle'%3E%E2%88%AB%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div class="sheet">
+      <header class="masthead">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <h1 class="logo">LaTeX<span class="slash">//</span>Practice</h1>
+            <p class="logo-sub"><span lang="ja">ラテックス練習</span> · Math typesetting drill unit</p>
+          </div>
+        </div>
+        <dl class="stats">
+          <div><dt>Solved</dt><dd id="stat-solved">000/000</dd></div>
+          <div><dt>Streak</dt><dd id="stat-streak">00</dd></div>
+          <div><dt>Best</dt><dd id="stat-best">00</dd></div>
+        </dl>
+      </header>
+
+      <nav class="controls" aria-label="Problem selection">
+        <div class="chips" role="group" aria-label="Difficulty">
+          <button class="chip" data-difficulty="all" aria-pressed="true">All</button>
+          <button class="chip" data-difficulty="easy" aria-pressed="false">Easy</button>
+          <button class="chip" data-difficulty="medium" aria-pressed="false">Med</button>
+          <button class="chip" data-difficulty="hard" aria-pressed="false">Hard</button>
+        </div>
+        <label class="topic">
+          <span class="microlabel">Topic</span>
+          <select id="topic"><option value="all">All topics</option></select>
+        </label>
+        <div class="pager">
+          <button class="icon-btn" id="prev" aria-label="Previous problem">&larr;</button>
+          <span class="counter" id="counter" aria-live="polite">001 / 077</span>
+          <button class="icon-btn" id="next" aria-label="Next problem">&rarr;</button>
+        </div>
+        <button class="ghost-btn" id="random">Random</button>
+        <button class="ghost-btn" id="open-index" aria-haspopup="dialog">Index ▦</button>
+      </nav>
+
+      <main class="workspace">
+        <section class="col col-work">
+          <div class="panel panel-input">
+            <div class="panel-head"><span class="microlabel">Input // Src</span><span class="microlabel muted">Ctrl+Enter = submit</span></div>
+            <div class="editor" id="editor"></div>
+          </div>
+          <div class="panel panel-output">
+            <div class="panel-head"><span class="microlabel">Output // Live</span><span class="microlabel muted">KaTeX</span></div>
+            <div class="math-out" id="output"></div>
+            <p class="err" id="error" role="status"></p>
+          </div>
+        </section>
+
+        <section class="col col-target">
+          <div class="panel panel-target" id="target-panel">
+            <div class="panel-head">
+              <span class="microlabel" id="target-label">Target // EX-001</span>
+              <span id="target-barcode"></span>
+            </div>
+            <div class="target-meta">
+              <span class="ex-num" id="ex-num">001</span>
+              <div>
+                <p class="ex-title" id="ex-title"></p>
+                <p class="microlabel" id="ex-data"></p>
+              </div>
+            </div>
+            <div class="math-target" id="target"></div>
+            <div class="reveal" id="reveal" hidden>
+              <span class="microlabel">Source // Revealed</span>
+              <code id="reveal-src"></code>
+            </div>
+            <div class="burst" id="burst" aria-hidden="true">
+              <svg viewBox="0 0 200 200"><polygon points="100,4 116,52 160,22 146,72 196,70 154,100 196,130 146,128 160,178 116,148 100,196 84,148 40,178 54,128 4,130 46,100 4,70 54,72 40,22 84,52" /></svg>
+              <span>MATCH<br />✓</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="actions">
+        <button class="ghost-btn" id="reveal-btn">Reveal answer</button>
+        <p class="status" id="status" role="status" aria-live="polite">Status // Ready</p>
+        <button class="primary-btn" id="submit">Submit <kbd>⏎</kbd></button>
+        <button class="primary-btn next-btn" id="next-btn" hidden>Next &rarr;</button>
+      </div>
+
+      <footer class="colophon">
+        <span class="microlabel">Spec sheet rev 0.1 · Render engine: KaTeX · Match mode: visual</span>
+        <span class="regmarks" aria-hidden="true">⊕ ⊕</span>
+        <span class="microlabel"><span lang="ja">デザインラボ</span> · LTX-PRC</span>
+      </footer>
+    </div>
+
+    <dialog class="index" id="index" aria-label="Problem index">
+      <div class="index-head">
+        <span class="microlabel">Index // All exercises</span>
+        <button class="icon-btn" id="close-index" aria-label="Close index">✕</button>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
