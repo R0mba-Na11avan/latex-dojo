@@ -14,6 +14,8 @@
   --font-jp: 'Noto Sans JP', sans-serif;
 
   --gap: 16px;
+  /* Shared by live output and target so they compare at the same size. */
+  --math-size: 2.6rem;
   color-scheme: light;
 }
 
@@ -498,7 +500,7 @@ select:focus-visible {
   padding: 20px;
   min-height: 150px;
   overflow-x: auto;
-  font-size: 1.25rem;
+  font-size: var(--math-size);
   transition: opacity 0.15s;
 }
 .math-out.stale {
@@ -574,7 +576,7 @@ select:focus-visible {
   place-items: center;
   padding: 24px 28px 36px;
   overflow-x: auto;
-  font-size: 2.6rem;
+  font-size: var(--math-size);
 }
 
 .reveal {
@@ -742,6 +744,172 @@ select:focus-visible {
   letter-spacing: 1em;
 }
 
+/* ---- cheat sheet drawer ---------------------------------------------- */
+.ref {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  width: min(420px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: -8px 0 0 var(--accent);
+  transform: translateX(105%);
+  visibility: hidden;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.22s;
+}
+.ref.open {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ref-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(239, 220, 194, 0.25);
+}
+.ref-head .icon-btn {
+  border-color: var(--paper);
+}
+.ref-head .icon-btn:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.ref-tools {
+  padding: 14px 16px 10px;
+  display: grid;
+  gap: 8px;
+}
+.ref-search {
+  width: 100%;
+  border: 1.5px solid var(--paper);
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+  padding: 9px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.ref-search::placeholder {
+  color: rgba(239, 220, 194, 0.45);
+}
+.ref-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.ref-hint {
+  margin: 0;
+  color: rgba(239, 220, 194, 0.5);
+}
+
+.ref-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 16px 24px;
+}
+.ref-body::-webkit-scrollbar {
+  width: 6px;
+}
+.ref-body::-webkit-scrollbar-thumb {
+  background: var(--accent);
+}
+.ref-body::-webkit-scrollbar-button {
+  display: none;
+}
+@supports not selector(::-webkit-scrollbar) {
+  .ref-body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+  }
+}
+
+.ref-section + .ref-section {
+  margin-top: 20px;
+}
+.ref-section h3 {
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+}
+.ref-section h3::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(239, 220, 194, 0.25);
+}
+.ref-intro {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(239, 220, 194, 0.65);
+}
+
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 4px;
+}
+.ref-grid.wide {
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+}
+
+.ref-item {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid rgba(239, 220, 194, 0.18);
+  background: transparent;
+  text-align: left;
+}
+.ref-item:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+.ref-item[hidden],
+.ref-section[hidden] {
+  display: none;
+}
+.ref-glyph {
+  font-size: 1.15rem;
+  min-height: 1.6em;
+  display: flex;
+  align-items: center;
+}
+.ref-glyph.display {
+  min-height: 2.6em;
+}
+.ref-item code {
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.ref-note {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.ref-empty {
+  margin: 0;
+  padding: 0 16px 24px;
+  color: rgba(239, 220, 194, 0.5);
+}
+
 /* ---- index dialog ---------------------------------------------------- */
 .index {
   width: min(960px, calc(100vw - 32px));
@@ -845,8 +1013,10 @@ select:focus-visible {
   .col-target {
     order: -1;
   }
+  :root {
+    --math-size: 1.6rem;
+  }
   .math-target {
-    font-size: 1.6rem;
     padding: 16px 16px 28px;
   }
   .panel-head .muted {
@@ -884,6 +1054,10 @@ select:focus-visible {
   }
   .jitter {
     animation: none;
+  }
+  .ref,
+  .ref.open {
+    transition: none;
   }
   .primary-btn {
     transition: none;

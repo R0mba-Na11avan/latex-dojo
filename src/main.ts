@@ -8,9 +8,11 @@ import '@fontsource/noto-sans-jp/700.css';
 import './styles.css';
 
 import katex from 'katex';
-import { createEditor, setText } from './editor';
+import { createEditor, insertText, setText } from './editor';
+import { createRefDrawer } from './refDrawer';
 import { Preview } from './preview';
 import { matches } from './match';
+import { visualMatches } from './visualMatch';
 import { Progress } from './progress';
 import { barcode } from './barcode';
 import { createTopicPicker } from './topicPicker';
@@ -94,7 +96,8 @@ function load(problem: Problem): void {
 
 function submit(): void {
   if (solvedNow) return;
-  if (matches(source, current.tex)) {
+  // Fast structural check first; fall back to comparing actual glyph positions.
+  if (matches(source, current.tex) || visualMatches(source, current.tex)) {
     solvedNow = true;
     progress.recordSolve(current.id, revealed);
     renderStats();
@@ -227,6 +230,21 @@ $('open-index').addEventListener('click', openIndex);
 $('close-index').addEventListener('click', () => $<HTMLDialogElement>('index').close());
 $<HTMLDialogElement>('index').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) (e.currentTarget as HTMLDialogElement).close();
+});
+
+const refDrawer = createRefDrawer({
+  root: $('ref'),
+  toggleButton: $<HTMLButtonElement>('open-ref'),
+  onInsert: (tex) => insertText(editor, tex),
+});
+$('open-ref').addEventListener('click', () => refDrawer.toggle());
+document.addEventListener('keydown', (e) => {
+  const t = e.target as HTMLElement;
+  const typing = t.isContentEditable || t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement;
+  if (e.key === '?' && !typing) {
+    e.preventDefault();
+    refDrawer.toggle();
+  }
 });
 
 renderStats();

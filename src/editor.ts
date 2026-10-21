@@ -73,6 +73,12 @@ export function createEditor({ parent, onChange, onSubmit }: EditorOptions): Edi
   });
 }
 
+/** Replace the selection (or insert at the cursor) and refocus the editor. */
+export function insertText(view: EditorView, text: string): void {
+  view.dispatch(view.state.replaceSelection(text));
+  view.focus();
+}
+
 export function setText(view: EditorView, text: string): void {
   view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } });
 }

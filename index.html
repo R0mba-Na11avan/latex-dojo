@@ -42,6 +42,7 @@
         </div>
         <button class="ghost-btn" id="random">Random</button>
         <button class="ghost-btn" id="open-index" aria-haspopup="dialog">Index ▦</button>
+        <button class="ghost-btn" id="open-ref" aria-expanded="false" aria-controls="ref" title="Cheat sheet (?)">Ref ▤</button>
       </nav>
 
       <main class="workspace">
@@ -96,6 +97,19 @@
         <span class="microlabel"><span lang="ja">デザインラボ</span> · LTX-PRC</span>
       </footer>
     </div>
+
+    <aside class="ref" id="ref" aria-label="LaTeX cheat sheet">
+      <div class="ref-head">
+        <span class="microlabel">Ref // Cheat sheet</span>
+        <button class="icon-btn ref-close" aria-label="Close cheat sheet">✕</button>
+      </div>
+      <div class="ref-tools">
+        <input class="ref-search" type="search" placeholder="Search: greek, integral, \frac…" aria-label="Search cheat sheet" spellcheck="false" />
+        <p class="microlabel ref-hint">Click an entry to insert it</p>
+      </div>
+      <div class="ref-body"></div>
+      <p class="ref-empty microlabel" hidden>No matches</p>
+    </aside>
 
     <dialog class="index" id="index" aria-label="Problem index">
       <div class="index-head">

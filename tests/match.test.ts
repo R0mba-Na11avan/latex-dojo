@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { matches, stripThinSpacing, canonical } from '../src/match';
+import katex from 'katex';
 import problems from '../src/problems.json';
+import { cheatsheet } from '../src/cheatsheet';
 
 describe('stripThinSpacing', () => {
   it('removes thin spaces but keeps row breaks', () => {
@@ -40,6 +42,13 @@ describe('matches', () => {
     expect(matches('\\frac{1}{', '\\frac{1}{2}')).toBe(false);
     expect(matches('', '')).toBe(false);
     expect(matches('   ', 'x')).toBe(false);
+  });
+});
+
+describe('cheat sheet', () => {
+  const entries = cheatsheet.flatMap((s) => s.items.map((i) => [s.title, i.tex]));
+  it.each(entries)('%s: %s renders', (_section, tex) => {
+    expect(() => katex.renderToString(tex, { throwOnError: true })).not.toThrow();
   });
 });
 
